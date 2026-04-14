@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 import { createServerSupabase } from '@/lib/supabase'
-import { getTodayEvents, oauth2Client } from '@/lib/google'
+import { getTodayEvents } from '@/lib/google'
 import { sendLineMessage, buildMorningMessage } from '@/lib/line'
 
 export async function GET(req: NextRequest) {
@@ -32,15 +32,15 @@ export async function GET(req: NextRequest) {
     let events: Array<{ title: string; start: string; allDay: boolean }> = []
 
     if (accessTokenRow && refreshTokenRow) {
-      oauth2Client.on('tokens', async (tokens) => {
-        if (tokens.access_token) {
+      events = await getTodayEvents(
+        accessTokenRow.value,
+        refreshTokenRow.value,
+        async (newAccessToken) => {
           await supabase
             .from('app_settings')
-            .upsert({ key: 'google_access_token', value: tokens.access_token })
+            .upsert({ key: 'google_access_token', value: newAccessToken })
         }
-      })
-
-      events = await getTodayEvents(accessTokenRow.value, refreshTokenRow.value)
+      )
     }
 
     // 未購入の買い物数を取得
