@@ -87,7 +87,3 @@ export const getTodayEvents = async (
   }))
 }
 
-// 後方互換性のためにoauth2Clientをエクスポート（cron/morning/route.tsで使用）
-export const oauth2Client = {
-  on: () => {},
-}

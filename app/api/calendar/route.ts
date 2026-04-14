@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 import { createServerSupabase } from '@/lib/supabase'
-import { getTodayEvents, oauth2Client } from '@/lib/google'
+import { getTodayEvents } from '@/lib/google'
 
 export async function GET() {
   try {
@@ -28,21 +28,15 @@ export async function GET() {
       )
     }
 
-    // トークンが期限切れの場合は自動リフレッシュ
-    oauth2Client.setCredentials({
-      access_token: accessTokenRow.value,
-      refresh_token: refreshTokenRow.value,
-    })
-
-    oauth2Client.on('tokens', async (tokens) => {
-      if (tokens.access_token) {
+    const events = await getTodayEvents(
+      accessTokenRow.value,
+      refreshTokenRow.value,
+      async (newAccessToken) => {
         await supabase
           .from('app_settings')
-          .upsert({ key: 'google_access_token', value: tokens.access_token })
+          .upsert({ key: 'google_access_token', value: newAccessToken })
       }
-    })
-
-    const events = await getTodayEvents(accessTokenRow.value, refreshTokenRow.value)
+    )
     return NextResponse.json({ events })
   } catch (err) {
     console.error(err)
