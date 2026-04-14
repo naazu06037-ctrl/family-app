@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 import { createServerSupabase } from '@/lib/supabase'
 import { getTodayEvents, oauth2Client } from '@/lib/google'
 

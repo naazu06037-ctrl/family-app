@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromCode } from '@/lib/google'
 import { createServerSupabase } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')
   if (!code) {
