@@ -16,6 +16,7 @@ export const getAuthUrl = () => {
     access_type: 'offline',
     scope: SCOPES,
     prompt: 'consent',
+    state: 'family-app-csrf-token',
   })
 }
 
