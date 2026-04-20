@@ -11,13 +11,17 @@ function createOAuth2Client() {
 }
 
 export const getAuthUrl = () => {
-  const client = createOAuth2Client()
-  return client.generateAuthUrl({
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID!,
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+    response_type: 'code',
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
     access_type: 'offline',
-    scope: SCOPES,
     prompt: 'consent',
     state: 'family-app-csrf-token',
+    include_granted_scopes: 'true',
   })
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
 }
 
 export const getTokensFromCode = async (code: string) => {
